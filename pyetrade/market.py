@@ -15,32 +15,10 @@ LOGGER = logging.getLogger(__name__)
 
 class ETradeMarket(object):
     '''ETradeMarket'''
-    def __init__(self, client_key, client_secret,
-                 resource_owner_key, resource_owner_secret):
-        '''__init__(client_key, client_secret)
-           param: client_key
-           type: str
-           description: etrade client key
-           param: client_secret
-           type: str
-           description: etrade client secret
-           param: resource_owner_key
-           type: str
-           description: OAuth authentication token key
-           param: resource_owner_secret
-           type: str
-           description: OAuth authentication token secret'''
-        self.client_key = client_key
-        self.client_secret = client_secret
-        self.resource_owner_key = resource_owner_key
-        self.resource_owner_secret = resource_owner_secret
+    def __init__(self, etoauth):
         self.base_url_prod = r'https://etws.etrade.com'
         self.base_url_dev = r'https://etwssandbox.etrade.com'
-        self.session = OAuth1Session(self.client_key,
-                                     self.client_secret,
-                                     self.resource_owner_key,
-                                     self.resource_owner_secret,
-                                     signature_type='AUTH_HEADER')
+        self.etoauth = etoauth
 
     def look_up_product(self, company, s_type,
                         dev=True, resp_format='json'):
@@ -93,7 +71,7 @@ class ETradeMarket(object):
             'company': company,
             'type': s_type
             }
-        req = self.session.get(api_url, params=payload)
+        req = self.etoauth.session.get(api_url, params=payload)
         req.raise_for_status()
         LOGGER.debug(req.text)
 
@@ -161,7 +139,7 @@ class ETradeMarket(object):
         LOGGER.debug(api_url)
         #add detail flag to url
         payload = {'detailFlag': detail_flag}
-        req = self.session.get(api_url, params=payload)
+        req = self.etoauth.session.get(api_url, params=payload)
         req.raise_for_status()
         LOGGER.debug(req.text)
 
